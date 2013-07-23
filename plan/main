@@ -1,1 +1,19 @@
 #include <turnkey/base>
+
+git
+python-pip
+postgresql
+build-essential
+python-dev
+libevent-dev
+libpq-dev
+openssh-server
+memcached
+libmemcached-dev
+libjpeg8
+libjpeg-dev
+libfreetype6
+libfreetype6-dev
+nginx
+postfix
+webmin-postfix
