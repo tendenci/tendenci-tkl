@@ -1,0 +1,79 @@
+#!/bin/sh -ex
+
+SITE_NAME=tendenci
+
+DB_NAME=$SITE_NAME
+DB_USER=ten$SITE_NAMEdenci
+DB_PASS=$(mcookie)
+
+SITE_DIR=/var/www/$SITE_NAME
+TENDENCI_USERNAME=admin
+TENDENCI_PASSWD=admin
+USER_EMAIL=root@localhost
+SECRET_KEY=`date | md5sum | head -c 16`
+
+# add symlinks for jpeg and freetype
+ln -s /usr/lib/`uname -i`-linux-gnu/libz.so /usr/lib
+ln -s /usr/lib/`uname -i`-linux-gnu/libjpeg.so /usr/lib
+ln -s /usr/lib/`uname -i`-linux-gnu/libfreetype.so /usr/lib
+
+# create the tendenci site folder
+mkdir -p $SITE_DIR
+chown root:www-data $SITE_DIR
+cd $SITE_DIR
+
+# make a virtualenv
+virtualenv venv
+. venv/bin/activate
+
+# install tendenci
+pip install tendenci
+create-tendenci-project
+pip install -r requirements/dev.txt
+
+# create tendenci database
+psql -U postgres -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
+psql -U postgres -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
+psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
+
+# update DATABASE_URL in .env
+sed -i "s|DATABASE_URL\s*=\(.*\)|DATABASE_URL='postgres://$DB_USER:$DB_PASS@localhost/$DB_NAME'|" .env
+
+# add some variables in .env
+echo "LOCAL_MEMCACHED_URL='127.0.0.1:11211'" >> .env
+echo "EMAIL_HOST='localhost'" >> .env
+echo "EMAIL_PORT='25'" >> .env
+echo "HAYSTACK_SEARCH_ENGINE='whoosh'" >> .env
+echo "SECRET_KEY='$SECRET_KEY'" >> .env
+
+# run deploy.py
+python deploy.py
+
+# create tendenci superuser
+cat>>$SITE_DIR/create_superuser.py<<EOF
+import os, settings
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from django.contrib.auth.models import User
+User.objects.create_superuser('$TENDENCI_USERNAME', '$USER_EMAIL', '$TENDENCI_PASSWD')
+EOF
+python $SITE_DIR/create_superuser.py
+rm $SITE_DIR/create_superuser.py
+
+# install default data
+python manage.py load_npo_defaults
+
+# start upstart script
+service $SITE_NAME start
+
+# create a symlink
+ln -s /etc/nginx/sites-available/$SITE_NAME /etc/nginx/sites-enabled/$SITE_NAME
+
+# remove nginx default
+rm /etc/nginx/sites-enabled/default
+
+# restart nginx
+service nginx restart
+
+# restart memcachd
+service memcached start
+
