@@ -3,7 +3,7 @@
 SITE_NAME=tendenci
 
 DB_NAME=$SITE_NAME
-DB_USER=ten$SITE_NAMEdenci
+DB_USER=$SITE_NAME
 DB_PASS=$(mcookie)
 
 SITE_DIR=/var/www/$SITE_NAME
@@ -23,7 +23,7 @@ chown root:www-data $SITE_DIR
 cd $SITE_DIR
 
 # make a virtualenv
-virtualenv venv
+virtualenv venv --distribute
 . venv/bin/activate
 
 # install tendenci

@@ -15,7 +15,7 @@ and on top of that:
 Credentials *(passwords set at first boot)*
 -------------------------------------------
 
-- Webmin, SSH, MySQL: username **root**
+- Webmin, SSH, Postgresql: username **root**
 - Tendenci admin console: username **admin**
 
 .. _Tendenci: https://github.com/tendenci/tendenci
