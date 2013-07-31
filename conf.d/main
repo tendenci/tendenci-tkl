@@ -23,6 +23,7 @@ chown root:www-data $SITE_DIR
 cd $SITE_DIR
 
 # make a virtualenv
+pip install virtualenv
 virtualenv venv --distribute
 . venv/bin/activate
 
