@@ -17,6 +17,9 @@ ln -s /usr/lib/`uname -i`-linux-gnu/libz.so /usr/lib
 ln -s /usr/lib/`uname -i`-linux-gnu/libjpeg.so /usr/lib
 ln -s /usr/lib/`uname -i`-linux-gnu/libfreetype.so /usr/lib
 
+# start postgresql
+service postgresql restart
+
 # create the tendenci site folder
 mkdir -p $SITE_DIR
 chown root:www-data $SITE_DIR
