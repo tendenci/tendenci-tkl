@@ -55,8 +55,9 @@ python deploy.py
 
 # create tendenci superuser
 cat>>$SITE_DIR/create_superuser.py<<EOF
-import os, settings
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'conf.settings'
+import conf.settings
 from django.contrib.auth.models import User
 User.objects.create_superuser('$TENDENCI_USERNAME', '$USER_EMAIL', '$TENDENCI_PASSWD')
 EOF
