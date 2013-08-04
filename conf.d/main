@@ -17,6 +17,24 @@ ln -s /usr/lib/`uname -i`-linux-gnu/libz.so /usr/lib
 ln -s /usr/lib/`uname -i`-linux-gnu/libjpeg.so /usr/lib
 ln -s /usr/lib/`uname -i`-linux-gnu/libfreetype.so /usr/lib
 
+# Debian GNU/Linux 6.0.7 (squeeze) has python2.6 installed,
+# but we need python2.7 for tendenci
+python_version=`python --version 2>&1 | awk '{print $2}' | cut -c1-3`
+if [ $python_version == 2.6 ]
+then
+	# install python2.7
+	#wget "http://python.org/ftp/python/2.7.5/Python-2.7.5.tgz"
+	cd /var/packages
+	tar -xzvf Python-2.7.5.tgz
+	cd Python-2.7.5
+	./configure
+	make
+	make install
+	
+	# install pip
+	easy_install pip
+fi
+
 # start postgresql
 service postgresql restart
 
@@ -27,7 +45,8 @@ cd $SITE_DIR
 
 # make a virtualenv
 pip install virtualenv
-virtualenv venv --distribute
+py_path=`which python`
+virtualenv venv --distribute -p $py_path
 . venv/bin/activate
 
 # install tendenci
