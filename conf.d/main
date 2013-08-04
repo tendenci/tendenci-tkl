@@ -12,11 +12,6 @@ TENDENCI_PASSWD=admin
 USER_EMAIL=root@localhost
 SECRET_KEY=`date | md5sum | head -c 16`
 
-# add symlinks for jpeg and freetype
-ln -s /usr/lib/`uname -i`-linux-gnu/libz.so /usr/lib
-ln -s /usr/lib/`uname -i`-linux-gnu/libjpeg.so /usr/lib
-ln -s /usr/lib/`uname -i`-linux-gnu/libfreetype.so /usr/lib
-
 # Debian GNU/Linux 6.0.7 (squeeze) has python2.6 installed,
 # but we need python2.7 for tendenci
 python_version=`python --version 2>&1 | awk '{print $2}' | cut -c1-3`
