@@ -84,8 +84,21 @@ rm $SITE_DIR/create_superuser.py
 # install default data
 python manage.py load_npo_defaults
 
-# start upstart script
-service $SITE_NAME start
+# create user: tendenci group: tendenci
+useradd tendenci -d /nonexistent
+groupadd -f tendenci
+usermod -a -G tendenci tendenci
+
+# start gunicorn
+cp /var/bin/gunicorn_start.sh venv/bin/gunicorn_start
+chmod +x venv/bin/gunicorn_start
+
+# supervisor reread conf files and update
+supervisorctl reread
+supervisorctl update
+
+# supervisor start tendenci
+supervisorctl start tendenci
 
 # create a symlink
 ln -s /etc/nginx/sites-available/$SITE_NAME /etc/nginx/sites-enabled/$SITE_NAME
