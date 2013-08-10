@@ -69,15 +69,15 @@ useradd tendenci -d /nonexistent
 groupadd -f tendenci
 usermod -a -G tendenci tendenci
 
-# change owner
-chown -R tendenci:www-data $SITE_DIR
-
 # setup gunicorn
 if [ ! -d $SITE_DIR/run ]; then
 	mkdir $SITE_DIR/run
 fi
 cp /var/bin/gunicorn_start.sh venv/bin/gunicorn_start
 chmod +x venv/bin/gunicorn_start
+
+# change owner
+chown -R tendenci:www-data $SITE_DIR
 
 # supervisor reread conf files and update
 service supervisor start
