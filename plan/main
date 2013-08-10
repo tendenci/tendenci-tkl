@@ -1,13 +1,12 @@
 #include <turnkey/base>
 
-git
 python-pip
+ipython
 postgresql
 build-essential
 python-dev
 libevent-dev
 libpq-dev
-openssh-server
 memcached
 libmemcached-dev
 libjpeg8

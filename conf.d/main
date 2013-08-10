@@ -12,45 +12,22 @@ TENDENCI_PASSWD=admin
 USER_EMAIL=root@localhost
 SECRET_KEY=`date | md5sum | head -c 16`
 
-# Debian GNU/Linux 6.0.7 (squeeze) has python2.6 installed,
-# but we need python2.7 for tendenci
-python_version=`python --version 2>&1 | awk '{print $2}' | cut -c1-3`
-if [ "$python_version" == "2.6" ]
-then
-	# install python2.7
-	#wget "http://python.org/ftp/python/2.7.5/Python-2.7.5.tgz"
-	cd /var/packages
-	tar -xzvf Python-2.7.5.tgz
-	cd Python-2.7.5
-	./configure
-	make
-	make install
-	
-	# install pip
-	easy_install pip
-fi
+# create the tendenci site folder
+mkdir -p $SITE_DIR
+cd $SITE_DIR
+
+pip install virtualenv
+virtualenv venv --distribute
+. venv/bin/activate
+
+pip install tendenci
+
+create-tendenci-project
+
+pip install -r requirements/dev.txt
 
 # start postgresql
 service postgresql restart
-
-# create the tendenci site folder
-mkdir -p $SITE_DIR
-chown root:www-data $SITE_DIR
-cd $SITE_DIR
-
-# make a virtualenv
-pip install virtualenv
-py_path=`which python`
-virtualenv venv --distribute -p $py_path
-. venv/bin/activate
-
-# install tendenci
-pip install html5lib
-pip install python-openid>=2.2
-pip install --index-url=file:///var/packages/pypi/simple tendenci
-create-tendenci-project
-pip install tendenci-videos>=1.0.2
-pip install -r requirements/dev.txt --index-url=file:///var/packages/pypi/simple
 
 # create tendenci database
 psql -U postgres -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
@@ -84,31 +61,51 @@ rm $SITE_DIR/create_superuser.py
 # install default data
 python manage.py load_npo_defaults
 
-# create user: tendenci group: tendenci
+# update index
+python manage.py update_index
+
+# create tendenci user and group - to be used by gunicorn
 useradd tendenci -d /nonexistent
 groupadd -f tendenci
 usermod -a -G tendenci tendenci
 
-# start gunicorn
+# change owner
+chown -R tendenci:www-data $SITE_DIR
+
+# setup gunicorn
+if [ ! -d $SITE_DIR/run ]; then
+	mkdir $SITE_DIR/run
+fi
 cp /var/bin/gunicorn_start.sh venv/bin/gunicorn_start
 chmod +x venv/bin/gunicorn_start
 
 # supervisor reread conf files and update
-supervisorctl reread
-supervisorctl update
+service supervisor start
+#supervisorctl reread
+#supervisorctl update
 
 # supervisor start tendenci
 supervisorctl start tendenci
 
 # create a symlink
+if [ ! -d /etc/nginx/sites-enabled ]; then
+	mkdir /etc/nginx/sites-enabled
+fi
 ln -s /etc/nginx/sites-available/$SITE_NAME /etc/nginx/sites-enabled/$SITE_NAME
 
 # remove nginx default
-rm /etc/nginx/sites-enabled/default
+if [ -f /etc/nginx/sites-enabled/default ]; then
+	rm /etc/nginx/sites-enabled/default
+fi
 
 # restart nginx
-service nginx restart
+#service nginx restart
 
 # restart memcachd
-service memcached start
+#service memcached start
 
+# stop services
+#service postgresql stop
+#supervisorctl stop tendenci
+#service nginx stop
+#service supervisor stop
