@@ -1,0 +1,7 @@
+#!/bin/bash -e
+# set tendenci admin password and email
+
+. /etc/default/inithooks
+
+[ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
+$INITHOOKS_PATH/bin/tendenci.py --pass="$APP_PASS" --email="$APP_EMAIL"
