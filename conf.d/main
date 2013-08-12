@@ -13,10 +13,15 @@ USER_EMAIL=root@localhost
 SECRET_KEY=`date | md5sum | head -c 16`
 
 # Setup extra dependencies for PIL
-ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/
-ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib/
-ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/
-
+if [ ! -f /usr/lib/libz.so ]; then
+        ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/
+fi
+if [ ! -f /usr/lib/libjpeg.so ]; then
+        ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib/
+fi
+if [ ! -f /usr/lib/libfreetype.so ]; then
+        ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/
+fi
 # create the tendenci site folder
 mkdir -p $SITE_DIR
 cd $SITE_DIR
