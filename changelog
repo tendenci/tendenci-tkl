@@ -14,11 +14,11 @@ turnkey-tendenci-13.0 (1) turnkey; urgency=low
   
   * Major component versions:
   
-  	tendenci		5.1.116
-  	postgresql		9.1
-  	nginx			1.2.1
-  	python 			2.7
-  	django			1.4
+	- tendenci		5.1.116
+	- postgresql		9.1
+	- nginx			1.2.1
+	- python 			2.7
+	- django			1.4
   
   * Note: We only describe changes specific to this appliance here. Please refer to
   	turnkey-core's changelog for changes common to all appliances.
