@@ -1,26 +1,32 @@
-Tendenci - Content Management Software for Non-Profit Organizations
-========================================
+Tendenci - Content Management System for Non-Profits
+====================================================
 
-`Tendenci` is a content management software built specifically for NPOs 
-(Non Profit Organizations).
+`Tendenci`_ is a content management system built specifically for NPOs
+(Non Profit Organizations). Tendenci core features include membership
+management, online events calendar and event registration, donations
+form, online business directories, and rich media photo galleries and
+video gallery modules. 
 
 This appliance includes all the standard features in `TurnKey Core`_,
 and on top of that:
 
-- Installed a demo tendenci site to /var/www/tendenci:
-   
-   - Set up with Nginx, Gunicorn, Supervisor and Postgresql.
-   - Use Postfix for email support.
-   - Use Whoosh for index search.
+- Tendenci configurations:
+
+    - Installed from upstream source code (pip) to /var/www/tendenci.
+    - Configured to use Nginx, Gunicorn, Supervisor and PostgreSQL.
+    - Configured to use Whoosh for index search.
    
 - SSL support out of the box.
+- Postfix MTA (bound to localhost) to allow sending of email (e.g.,
+  password recovery).
 
 Credentials *(passwords set at first boot)*
 -------------------------------------------
 
 - Webmin, SSH: username **root**
-- Postgresql: postgres
-- Tendenci admin: username **admin**
+- Postgresql: **postgres**
+- Tendenci: username **admin**
 
 .. _Tendenci: https://github.com/tendenci/tendenci
 .. _TurnKey Core: http://www.turnkeylinux.org/core
+
