@@ -94,14 +94,6 @@ chmod +x venv/bin/gunicorn_start
 # change owner
 chown -R tendenci:www-data $SITE_DIR
 
-# supervisor reread conf files and update
-service supervisor start
-#supervisorctl reread
-#supervisorctl update
-
-# supervisor start tendenci
-supervisorctl start tendenci
-
 # create a symlink
 if [ ! -d /etc/nginx/sites-enabled ]; then
 	mkdir /etc/nginx/sites-enabled
@@ -113,14 +105,6 @@ if [ -f /etc/nginx/sites-enabled/default ]; then
 	rm /etc/nginx/sites-enabled/default
 fi
 
-# restart nginx
-#service nginx restart
-
-# restart memcachd
-#service memcached start
-
 # stop services
 service postgresql stop
-supervisorctl stop tendenci
-#service nginx stop
-service supervisor stop
+
