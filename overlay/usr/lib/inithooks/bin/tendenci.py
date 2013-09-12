@@ -68,7 +68,7 @@ def _get_pbkdf2_hashpass(password):
     digest = hashlib.sha256
     hash = pbkdf2(password, salt, iterations, digest=digest)
     hash = hash.encode('base64').strip()
-    return "%s\$%d\$%s\$%s" % (algorithm, iterations, salt, hash)
+    return "%s$%d$%s$%s" % (algorithm, iterations, salt, hash)
 
 def _get_hashpass(password):
     salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
