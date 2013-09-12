@@ -120,7 +120,7 @@ fi
 #service memcached start
 
 # stop services
-#service postgresql stop
-#supervisorctl stop tendenci
+service postgresql stop
+supervisorctl stop tendenci
 #service nginx stop
-#service supervisor stop
+service supervisor stop
