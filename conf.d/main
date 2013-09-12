@@ -85,9 +85,7 @@ groupadd -f tendenci
 usermod -a -G tendenci tendenci
 
 # setup gunicorn
-if [ ! -d $SITE_DIR/run ]; then
-	mkdir $SITE_DIR/run
-fi
+mkdir -p $SITE_DIR/run
 cp /var/bin/gunicorn_start.sh venv/bin/gunicorn_start
 chmod +x venv/bin/gunicorn_start
 
@@ -95,15 +93,11 @@ chmod +x venv/bin/gunicorn_start
 chown -R tendenci:www-data $SITE_DIR
 
 # create a symlink
-if [ ! -d /etc/nginx/sites-enabled ]; then
-	mkdir /etc/nginx/sites-enabled
-fi
+mkdir -p /etc/nginx/sites-enabled
 ln -s /etc/nginx/sites-available/$SITE_NAME /etc/nginx/sites-enabled/$SITE_NAME
 
 # remove nginx default
-if [ -f /etc/nginx/sites-enabled/default ]; then
-	rm /etc/nginx/sites-enabled/default
-fi
+rm -f /etc/nginx/sites-enabled/default
 
 # stop services
 service postgresql stop
