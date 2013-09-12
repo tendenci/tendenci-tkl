@@ -6,22 +6,18 @@ DB_NAME=$SITE_NAME
 DB_USER=$SITE_NAME
 DB_PASS=$(mcookie)
 
+ADMIN_NAME=admin
+ADMIN_PASS=turnkey
+ADMIN_MAIL=admin@example.com
+
 SITE_DIR=/var/www/$SITE_NAME
-TENDENCI_USERNAME=admin
-TENDENCI_PASSWD=admin
-USER_EMAIL=root@localhost
 SECRET_KEY=`date | md5sum | head -c 16`
 
 # Setup extra dependencies for PIL
-if [ ! -f /usr/lib/libz.so ]; then
-        ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/
-fi
-if [ ! -f /usr/lib/libjpeg.so ]; then
-        ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib/
-fi
-if [ ! -f /usr/lib/libfreetype.so ]; then
-        ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/
-fi
+[ -f /usr/lib/libz.so ] || ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/
+[ -f /usr/lib/libjpeg.so ] || ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib/
+[ -f /usr/lib/libfreetype.so ] || ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/
+
 # create the tendenci site folder
 mkdir -p $SITE_DIR
 cd $SITE_DIR
@@ -31,9 +27,7 @@ virtualenv venv --distribute
 . venv/bin/activate
 
 pip install tendenci
-
 create-tendenci-project
-
 pip install -r requirements/dev.txt
 
 # start postgresql
@@ -65,40 +59,35 @@ import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'conf.settings'
 import conf.settings
 from django.contrib.auth.models import User
-User.objects.create_superuser('$TENDENCI_USERNAME', '$USER_EMAIL', '$TENDENCI_PASSWD')
+User.objects.create_superuser('$ADMIN_NAME', '$ADMIN_MAIL', '$ADMIN_PASS')
 EOF
 python $SITE_DIR/create_superuser.py
 rm $SITE_DIR/create_superuser.py
 
-# install default data
+# install default data and update index
 python manage.py load_npo_defaults
-
-# update index
 python manage.py update_index
 
 # deactivate virtual environment
 deactivate
 
-# create tendenci user and group - to be used by gunicorn
+# setup gunicorn
 useradd tendenci -d /nonexistent
 groupadd -f tendenci
 usermod -a -G tendenci tendenci
 
-# setup gunicorn
 mkdir -p $SITE_DIR/run
 cp /var/bin/gunicorn_start.sh venv/bin/gunicorn_start
 chmod +x venv/bin/gunicorn_start
 
-# change owner
+# change ownership
 chown -R tendenci:www-data $SITE_DIR
 
-# create a symlink
+# setup nginx
 mkdir -p /etc/nginx/sites-enabled
 ln -s /etc/nginx/sites-available/$SITE_NAME /etc/nginx/sites-enabled/$SITE_NAME
-
-# remove nginx default
 rm -f /etc/nginx/sites-enabled/default
 
-# stop services
+# stop postgresql
 service postgresql stop
 
