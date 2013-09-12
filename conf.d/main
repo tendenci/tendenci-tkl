@@ -11,7 +11,6 @@ ADMIN_PASS=turnkey
 ADMIN_MAIL=admin@example.com
 
 SITE_DIR=/var/www/$SITE_NAME
-SECRET_KEY=`date | md5sum | head -c 16`
 
 # Setup extra dependencies for PIL
 [ -f /usr/lib/libz.so ] || ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/
@@ -48,7 +47,7 @@ echo "LOCAL_MEMCACHED_URL='127.0.0.1:11211'" >> .env
 echo "EMAIL_HOST='localhost'" >> .env
 echo "EMAIL_PORT='25'" >> .env
 echo "HAYSTACK_SEARCH_ENGINE='whoosh'" >> .env
-echo "SECRET_KEY='$SECRET_KEY'" >> .env
+echo "SECRET_KEY='$(mcookie)$(mcookie)'" >> .env
 
 # run deploy.py
 python deploy.py
