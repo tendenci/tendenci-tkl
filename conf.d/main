@@ -76,6 +76,9 @@ python manage.py load_npo_defaults
 # update index
 python manage.py update_index
 
+# deactivate virtual environment
+deactivate
+
 # create tendenci user and group - to be used by gunicorn
 useradd tendenci -d /nonexistent
 groupadd -f tendenci
