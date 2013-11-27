@@ -1,6 +1,9 @@
 Tendenci - Content Management System for Non-Profits
 ====================================================
 
+**The TurnKey Tendenci virtual appliance is available to download at: [http://www.turnkeylinux.org/tendenci](http://www.turnkeylinux.org/tendenci)**
+
+
 `Tendenci`_ is a content management system built specifically for NPOs
 (Non Profit Organizations). Tendenci core features include membership
 management, online events calendar and event registration, donations
